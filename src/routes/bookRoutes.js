@@ -1,46 +1,17 @@
 const express = require('express')
+const bookController = require('../controllers/bookController')
+const bookService = require('../services/goodReadServices')
 
 const bookRouter = express.Router()
 
 function router(nav) {
-  const books = [
-    {
-      title: 'War And Peace',
-      genre: 'History',
-      author: 'Ya boi',
-      read: false
-    },
-    {
-      title: 'Moby Dick',
-      genre: 'History',
-      author: 'Ya boi',
-      read: false
-    }
-  ]
+  const { getBooks, getById, authMiddleware } = bookController(bookService, nav)
+  bookRouter.use(authMiddleware)
 
   bookRouter.route('/')
-    .get((req, res) => {
-      res.render(
-        'bookListView',
-        {
-          nav,
-          title: 'Library',
-          books
-        }
-      )
-    })
+    .get(getBooks)
   bookRouter.route('/:id')
-    .get((req, res) => {
-      const { id } = req.params
-      res.render(
-        'bookView',
-        {
-          nav,
-          title: 'Library',
-          book: books[id]
-        }
-      )
-    })
+    .get(getById)
 
   return bookRouter
 }
